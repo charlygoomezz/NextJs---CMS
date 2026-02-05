@@ -1,0 +1,48 @@
+import {homePageQuery} from '@/lib/sanity/queries/home'
+import type {HomePage} from '@/lib/sanity/types'
+import {client} from '@/sanity/lib/client'
+
+export default async function Home() {
+  const data = await client.fetch<HomePage | null>(homePageQuery)
+
+  return (
+    <main className="space-y-12">
+      <section className="space-y-2">
+        <h1 className="text-4xl font-semibold">
+          {data?.title ?? 'Home'}
+        </h1>
+        {data?.heroTagline ? (
+          <p className="text-lg text-muted-foreground">{data.heroTagline}</p>
+        ) : null}
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-2xl font-semibold">Eventos destacados</h2>
+        <ul className="space-y-2">
+          {data?.featuredEvents?.map((event) => (
+            <li key={event._id} className="border-b pb-2">
+              <p className="font-medium">{event.title}</p>
+              <p className="text-sm text-muted-foreground">
+                {event.date} · {event.status}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-2xl font-semibold">Artistas destacados</h2>
+        <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {data?.featuredArtists?.map((artist) => (
+            <li key={artist._id} className="border p-3">
+              <p className="font-medium">{artist.name}</p>
+              <p className="text-sm text-muted-foreground">
+                {artist.genres?.join(', ')}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </main>
+  )
+}
